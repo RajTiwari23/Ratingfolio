@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "prisma generate && pnpm install",
+    "build": "pnpm install && prisma install",
     "start": "node main.js",
     "dev": "nodemon main.js",
     "db:web": "prisma studio"
