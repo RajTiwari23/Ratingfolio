@@ -90,6 +90,7 @@ export async function RegisterController(req, res) {
           username:body.username,
           email: body.email,
           name: body.name,
+          verified: true,
         },
       });
       const hashedPassword = hashPassword(body.password);
