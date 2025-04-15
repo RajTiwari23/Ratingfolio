@@ -1,0 +1,125 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                  Int                   @id @default(autoincrement())
+    email               String                @unique
+    username            String                @unique
+    name                String?
+    verified            Boolean               @default(false)
+    updatedAt           DateTime?             @updatedAt
+    createdAt           DateTime              @default(now())
+    profile             Profile?
+    resettoken          ResetPasswordToken[]
+    authCredential      AuthCredential?
+    participatedContest ParticipatedContest[]
+    platform            Platform[]
+    submission          Submission[]
+    processRequest      ProcessRequest[]
+}
+
+model ResetPasswordToken {
+    id Int @id @default(autoincrement())
+    otp Int @unique
+    userId Int 
+    user User @relation(fields:[userId], references:[id])
+}
+
+model AuthCredential {
+    id            Int       @id @default(autoincrement())
+    userId        Int       @unique
+    password      String?
+    oauthProvider String?
+    oauthId       String?
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime? @updatedAt
+    user          User      @relation(fields: [userId], references: [id])
+}
+
+model Profile {
+    id        Int       @id @default(autoincrement())
+    rating    Int?      @default(0)
+    bio       String?
+    userId    Int       @unique
+    createdAt DateTime  @default(now())
+    updatedAt DateTime? @updatedAt
+    user      User      @relation(fields: [userId], references: [id])
+}
+
+model Platform {
+    id        Int          @id @default(autoincrement())
+    username  String
+    platform  PlatformEnum
+    rating    Int?
+    maxRating Int?
+    maxTitle  String?
+    title     String?
+    country   String?
+    userId    Int
+    isValid   Boolean      @default(false)
+    user      User         @relation(fields: [userId], references: [id])
+    createdAt DateTime     @default(now())
+    updatedAt DateTime?    @updatedAt
+
+    @@unique([username, platform])
+}
+
+model Submission {
+    id             Int          @id @default(autoincrement())
+    platform       PlatformEnum
+    lang           String
+    userId         Int
+    submissionLink String       @unique
+    time           Int
+    verdict        String
+    problemLink    String
+    user           User         @relation(fields: [userId], references: [id])
+    createdAt      DateTime     @default(now())
+}
+
+model ParticipatedContest {
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    contestId Int
+    user      User     @relation(fields: [userId], references: [id])
+    contest   Contest  @relation(fields: [contestId], references: [id])
+    createdAt DateTime @default(now())
+
+    @@unique([userId, contestId])
+}
+
+model Contest {
+    id                  Int                   @id @default(autoincrement())
+    name                String
+    time                Int
+    platform            PlatformEnum
+    url                 String                @unique
+    participatedContest ParticipatedContest[]
+}
+
+model ProcessRequest {
+    id        Int       @id @default(autoincrement())
+    userId    Int
+    user      User      @relation(fields: [userId], references: [id])
+    state     StateEnum @default(pending)
+    createdAt DateTime  @default(now())
+}
+
+enum PlatformEnum {
+    codeforces
+    codechef
+}
+
+enum StateEnum {
+    pending
+    processing
+    failed
+    completed
+}
