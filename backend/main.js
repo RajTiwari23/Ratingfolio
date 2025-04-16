@@ -8,6 +8,7 @@ import { getSearchProfileController } from "./controllers/profile.controller.js"
 import AuthRouter from "./routes/auth.route.js";
 import UserRouter from "./routes/user.route.js";
 import ProfileRouter from "./routes/profile.route.js";
+import cron from "node-cron"
 
 import { PORT } from "./config.js";
 
