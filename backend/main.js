@@ -19,10 +19,10 @@ app.get("/", async (req, res) => {
   return res.json({ message: `Hello message` });
 });
 console.log("Started ", new Date().toISOString())
-// cron.schedule("*/5 * * * *",()=>{
-//   console.log("Starting the 5 min cron jobs.")
-//   contestExtraction()
-// }) 
+cron.schedule("*/5 * * * *",()=>{
+  console.log("Starting the 5 min cron jobs.")
+  contestExtraction()
+}) 
 
 apiRouter.get("/profiles/search", getSearchProfileController)
 apiRouter.use("/auth", AuthRouter);
