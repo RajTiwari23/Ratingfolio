@@ -9,7 +9,7 @@ import AuthRouter from "./routes/auth.route.js";
 import UserRouter from "./routes/user.route.js";
 import ProfileRouter from "./routes/profile.route.js";
 import cron from "node-cron"
-
+import {contestExtraction} from "./cron.js"
 import { PORT } from "./config.js";
 
 app.use(bodyParser.json());
