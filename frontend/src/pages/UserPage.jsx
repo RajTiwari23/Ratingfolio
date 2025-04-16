@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
 import { api } from '../components/misc/api';
-import { UserPlatform } from '../components/user';
+import { UpdateProfile, UserPlatform } from '../components/user';
 import { useNavigate } from 'react-router-dom';
 import ModelProvider from '../components/provider/ModalProvider'
 
@@ -35,7 +35,10 @@ export function UserPage() {
           <h4>Welcome, @{data?.user.username}</h4>
         </div>
         <button onClick={handleSyncData} className="bg-slate-400 px-6 py-2 rounded text-slate-50 text-sm my-1">Sync data</button>
-      <UserPlatform />
+        <div className="flex gap-2">
+          <UserPlatform />
+          <UpdateProfile />
+        </div>
       </div>
       <Footer />
     </ModelProvider>

@@ -4,8 +4,11 @@ import { BACKEND_URL } from './config';
 class AxiosInstance{
     constructor(base_url){
         this.axios = axios.create({
-            baseURL:import.meta.env.DEV ? `http://127.0.0.1:5000/api`:base_url
+            // baseURL:import.meta.env.DEV ? `http://127.0.0.1:5000/api`:base_url
+            baseURl:base_url
         })
+        this.axios.defaults.baseURL = base_url
+        console.log(base_url)
         const userData = JSON.parse(localStorage.getItem("userData"))
         if(userData){
             this.axios.defaults.headers.common["Authorization"] = `Bearer ${userData.token}`
@@ -19,7 +22,9 @@ class AxiosInstance{
             password:data.password
         })
         const json = await response.data;
-        if(response.statusText !== "OK"){
+        console.log(json)
+        if(response.status >= 400){
+            console.log("life")
             return {status:"FAILED",...json }
         }
         localStorage.setItem("userData",JSON.stringify(json))
@@ -35,7 +40,7 @@ class AxiosInstance{
             password:data.password
         })
         const json = await response.data;
-        if(response.statusText !== "OK"){
+        if(response.status >= 400){
             return {status:"FAILED",...json} 
         }
         localStorage.setItem("userData",JSON.stringify(json))
@@ -55,7 +60,7 @@ class AxiosInstance{
         })
         const json = await response.data;
 
-        if(response.statusText !== "OK"){
+        if(response.status >= 400){
             return {status:"FAILED",...json} 
         }
         this.axios.defaults.headers.common['Authorization'] = `Bearer ${json.token}`;
@@ -70,7 +75,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.get("/user/profile")
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS",data:json}
@@ -85,7 +90,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.get(`/profile/${username}`)
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED", ...json}
             }
             return {status:"SUCCESS",...json}
@@ -105,7 +110,7 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED", ...json}
             }
             return {status:"SUCCESS",...json}
@@ -124,7 +129,7 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED", ...json}
             }
             return {status:"SUCCESS", ...json}
@@ -139,7 +144,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.get(`/profile/${username}/platforms`)
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED", ...json}
             }
             return {status:"SUCCESS", ...json}
@@ -158,7 +163,7 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED", ...json}
             }
             return {status:"SUCCESS", ...json}
@@ -173,7 +178,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.get("/user/extract")
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -188,7 +193,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.get("/user/platform")
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -208,7 +213,7 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -223,7 +228,7 @@ class AxiosInstance{
         try{
             const response = await this.axios.post("/user/platform", data)
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -243,7 +248,8 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){   
+        
+            if(response.status >= 400){   
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -263,7 +269,7 @@ class AxiosInstance{
                 }
             })
             const json = await response.data;
-            if(response.statusText !== "OK"){
+            if(response.status >= 400){
                 return {status:"FAILED",...json}
             }
             return {status:"SUCCESS", data:json}
@@ -274,7 +280,36 @@ class AxiosInstance{
                 return {status:"FAILED", message:error.response.data.message}
         }
     }
+    async postProfileData(data){
+        try{
+            const response = await this.axios.post("/user/profile",data)
+            const json = await response.data;
+            if(response.status >= 400){
+                return {status:"FAILED",...json}
+            }
+            return {status:"SUCCESS", data:json}
+        }catch(error){
+            console.error(error)
+            if(error instanceof AxiosError)
+                if(error.response.status === 401) return {status:"FAILED", message:"Unauthorized"}
+                return {status:"FAILED", message:error.response.data.message}
+        }
+    }
+    async patchProfileData(profile_id,data){
+        try{
+            const response = await this.axios.patch("/user/profile/"+profile_id,data)
+            const json = await response.data;
+            if(response.status >= 400){
+                return {status:"FAILED",...json}
+            }
+            return {status:"SUCCESS", data:{"message":"Successfully Updated your Profile Details."}}
+        }catch(error){
+            console.error(error)
+            if(error instanceof AxiosError)
+                if(error.response.status === 401) return {status:"FAILED", message:"Unauthorized"}
+                return {status:"FAILED", message:error.response.data.message}
+        }
+    }
 }
-
 
 export const api = new AxiosInstance(BACKEND_URL)

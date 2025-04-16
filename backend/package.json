@@ -7,6 +7,8 @@
   "scripts": {
     "build": "prisma generate && prisma migrate deploy",
     "start": "node main.js",
+    "migrate":"prisma migrate dev",
+    "push":"prisma db push",
     "dev": "nodemon main.js",
     "db:web": "prisma studio"
   },
